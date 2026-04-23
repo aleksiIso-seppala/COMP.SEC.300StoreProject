@@ -9,7 +9,7 @@
           {{
             isLogin
               ? 'Welcome back. Sign in to your account.'
-              : 'Create an account to start shopping.'
+              : 'Create an account to start posting reviews.'
           }}
         </p>
       </div>
@@ -17,8 +17,30 @@
       <form class="auth-form" @submit.prevent="handleSubmit">
         <label v-if="!isLogin">
           Username
-          <input v-model="form.username" type="text" placeholder="Enter your username" required />
+          <input
+            v-model="form.username"
+            type="text"
+            placeholder="Enter your username"
+            required
+          />
         </label>
+
+        <ul
+          v-if="showUsernameRules"
+          class="username-rules"
+          aria-label="Username requirements"
+        >
+          <li :class="{ passed: usernameChecks.length, failed: !usernameChecks.length }">
+            <span class="rule-icon">{{ usernameChecks.length ? '✔' : '✖' }}</span>
+            Username must be 3 to 20 characters long
+          </li>
+          <li
+            :class="{ passed: usernameChecks.lettersNumbersOnly, failed: !usernameChecks.lettersNumbersOnly }"
+          >
+            <span class="rule-icon">{{ usernameChecks.lettersNumbersOnly ? '✔' : '✖' }}</span>
+            Username can only contain letters and numbers
+          </li>
+        </ul>
 
         <label>
           Email
@@ -34,6 +56,25 @@
             required
           />
         </label>
+	
+        <ul v-if="!isLogin" class="password-rules" aria-label="Password requirements">
+          <li :class="{ passed: passwordChecks.minLength }">
+            <span class="rule-icon">{{ passwordChecks.minLength ? '✔' : '✖' }}</span>
+            Password needs to be at least 8 characters long
+          </li>
+          <li :class="{ passed: passwordChecks.upperAndLower }">
+            <span class="rule-icon">{{ passwordChecks.upperAndLower ? '✔' : '✖' }}</span>
+            Password needs at least one lowercase/uppercase letter
+          </li>
+          <li :class="{ passed: passwordChecks.number }">
+            <span class="rule-icon">{{ passwordChecks.number ? '✔' : '✖' }}</span>
+            Password needs at least one number
+          </li>
+          <li :class="{ passed: passwordChecks.special }">
+            <span class="rule-icon">{{ passwordChecks.special ? '✔' : '✖' }}</span>
+            Password needs at least one special character
+          </li>
+        </ul>
 
         <label v-if="!isLogin">
           Confirm Password
@@ -80,6 +121,8 @@ const emit = defineEmits(['close', 'switch-mode', 'submit'])
 
 const errorMessage = ref('')
 
+const usernameFocused = ref(false)
+
 const form = reactive({
   username: '',
   email: '',
@@ -88,6 +131,32 @@ const form = reactive({
 })
 
 const isLogin = computed(() => props.mode === 'login')
+
+const usernameChecks = computed(() => ({
+  length: form.username.trim().length >= 3 && form.username.trim().length <= 20,
+  lettersNumbersOnly: /^[A-Za-z0-9]+$/.test(form.username.trim())
+}))
+
+const passwordChecks = computed(() => ({
+  minLength: form.password.length >= 8,
+  upperAndLower: /[a-z]/.test(form.password) && /[A-Z]/.test(form.password),
+  number: /\d/.test(form.password),
+  special: /[^A-Za-z0-9]/.test(form.password)
+}))
+
+
+const isUsernameValid = computed(() =>
+  Object.values(usernameChecks.value).every(Boolean)
+)
+
+const isPasswordValid = computed(() =>
+  Object.values(passwordChecks.value).every(Boolean)
+)
+
+const showUsernameRules = computed(() =>
+  form.username.trim().length > 0 && !usernameFocused.value && !isUsernameValid.value
+)
+
 
 const resetForm = () => {
   form.username = ''
@@ -109,6 +178,15 @@ const handleSubmit = () => {
   errorMessage.value = ''
 
   if (!isLogin.value) {
+    if (!isUsernameValid.value) {
+      errorMessage.value = 'Username can only contain letters, numbers, underscores, and hyphens.'
+      return
+    }
+
+    if (!isPasswordValid.value) {
+      errorMessage.value = 'Password does not meet the required conditions.'
+      return
+    }
     if (form.password !== form.confirmPassword) {
       errorMessage.value = 'Passwords do not match.'
       return
@@ -119,7 +197,6 @@ const handleSubmit = () => {
     username: form.username,
     email: form.email,
     password: form.password,
-    slug: form.username.toLowerCase().replace(/\s+/g, '-'),
     setError: (message) => {
       errorMessage.value = message
     },
@@ -183,6 +260,42 @@ watch(
 .modal-header p {
   margin: 0;
   color: #6b7280;
+}
+
+.username-rules, 
+.password-rules {
+  margin: -6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.username-rules li,
+.password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.username-rules li.passed,
+.password-rules li.passed {
+  color: #16a34a;
+}
+
+.rule-icon {
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
+  font-weight: 700;
+}
+.error-message {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .auth-form {

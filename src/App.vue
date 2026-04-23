@@ -4,7 +4,7 @@
       <div class="topbar">
         <div class="brand-block">
           <RouterLink to="/" class="brand-link">
-            <h1 class="brand">DefinitelyNotSteam</h1>
+            <h1 class="brand">GameReview</h1>
           </RouterLink>
         </div>
 
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
 import AuthModal from './components/AuthModal.vue'
 import { ref } from 'vue'
 import { getCurrentUser, loginUser, registerUser, logoutUser } from './utils/auth'
@@ -48,6 +48,7 @@ import { getCurrentUser, loginUser, registerUser, logoutUser } from './utils/aut
 const isAuthModalOpen = ref(false)
 const authMode = ref('login')
 const currentUser = ref(getCurrentUser())
+const router = useRouter()
 
 const openModal = (mode) => {
   authMode.value = mode
@@ -58,12 +59,12 @@ const toggleAuthMode = () => {
   authMode.value = authMode.value === 'login' ? 'register' : 'login'
 }
 
-const handleAuthSubmit = ({ username, email, password, setError, close }) => {
+const handleAuthSubmit = async ({ username, email, password, setError, close }) => {
   try {
     if (authMode.value === 'login') {
-      currentUser.value = loginUser({ email, password })
+      currentUser.value = await loginUser({ email, password })
     } else {
-      currentUser.value = registerUser({ username, email, password })
+      currentUser.value = await registerUser({ username, email, password })
     }
 
     close()
@@ -73,9 +74,10 @@ const handleAuthSubmit = ({ username, email, password, setError, close }) => {
   }
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
   logoutUser()
   currentUser.value = null
+  router.push('/')
 }
 
 </script>

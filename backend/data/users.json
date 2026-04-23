@@ -1,0 +1,10 @@
+[
+  {
+    "id": "5b5aeda7-275a-464f-a969-df320a112a6d",
+    "username": "Kaps",
+    "slug": "kaps",
+    "email": "test@gmail.com",
+    "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$xRr3bxYQUg84C7ZXhNUYyw$oYkLbgtHVVi232iEnO0FYhxKne0WpiGe8Cz8nCsRYPg",
+    "createdAt": "2026-04-23T16:23:37.361Z"
+  }
+]

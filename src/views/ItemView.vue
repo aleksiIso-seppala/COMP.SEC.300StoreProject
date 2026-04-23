@@ -10,11 +10,6 @@
       <div class="item-details">
         <h2>{{ item.title }}</h2>
         <p class="item-description">{{ item.longDescription }}</p>
-
-        <div class="item-meta">
-          <span class="item-price">${{ item.price.toFixed(2) }}</span>
-          <button class="btn btn-primary">Add to cart</button>
-        </div>
       </div>
     </div>
 
@@ -24,8 +19,8 @@
         <p>Share your thoughts about this game below.</p>
       </div>
 
-      <div v-if="item.reviews.length" class="review-list">
-        <article v-for="review in item.reviews" :key="review.id" class="review-card">
+      <div v-if="reviews.length" class="review-list">
+        <article v-for="review in reviews" :key="review.id" class="review-card">
           <div class="review-header">
             <h4 class="review-title">{{ review.title }}</h4>
 
@@ -35,10 +30,10 @@
                 :to="`/profile/${review.userSlug}`"
                 class="review-name-link"
               >
-                {{ review.name }}
+                {{ review.userName || review.name }}
               </RouterLink>
               <strong v-else class="review-name">
-                {{ review.name }}
+                {{ review.userName || review.name }}
               </strong>
               <span class="review-stars">{{ '★'.repeat(review.rating) }}</span>
             </div>
@@ -100,38 +95,86 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { products } from '../data/products'
 import { getCurrentUser } from '../utils/auth'
 
 const route = useRoute()
+const API_BASE = 'http://localhost:3001/api'
 
 const item = computed(() => products.find((entry) => entry.slug === route.params.slug) || null)
 const currentUser = ref(getCurrentUser())
+const reviews = ref([])
 const reviewTitle = ref('')
 const reviewRating = ref(5)
 const reviewComment = ref('')
 
-const submitReview = () => {
+const loadReviews = async () => {
+  if (!item.value) {
+    reviews.value = []
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/reviews/by-product/${encodeURIComponent(item.value.slug)}`
+    )
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to load reviews.')
+    }
+
+    reviews.value = data.reviews || []
+    console.log('loaded reviews for', item.value.slug, reviews.value)
+  } catch (error) {
+    console.error('Failed to load reviews:', error)
+    reviews.value = []
+  }
+}
+
+const submitReview = async () => {
   if (!item.value || !currentUser.value || !reviewTitle.value.trim() || !reviewComment.value.trim()) {
     return
   }
 
-  item.value.reviews.unshift({
-    id: Date.now(),
-    title: reviewTitle.value.trim(),
-    name: currentUser.value.username,
-    userId: currentUser.value.id,
-    userSlug: currentUser.value.slug,
-    rating: reviewRating.value,
-    comment: reviewComment.value.trim()
-  })
+  try {
+    const response = await fetch(`${API_BASE}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        productSlug: item.value.slug,
+        productTitle: item.value.title,
+        title: reviewTitle.value.trim(),
+        rating: reviewRating.value,
+        comment: reviewComment.value.trim(),
+        userId: currentUser.value.id,
+        userSlug: currentUser.value.slug,
+        userName: currentUser.value.username
+      })
+    })
 
-  reviewTitle.value = ''
-  reviewRating.value = 5
-  reviewComment.value = ''
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to post review.')
+    }
+
+    reviews.value.unshift(data.review)
+
+    reviewTitle.value = ''
+    reviewRating.value = 5
+    reviewComment.value = ''
+  } catch (error) {
+    console.error('Failed to post review:', error)
+    alert(error.message)
+  }
 }
+
+watch(() => route.params.slug, loadReviews, { immediate: true })
 </script>
 
 <style scoped>
@@ -254,7 +297,7 @@ const submitReview = () => {
 
 .review-card p {
   margin: 0;
-  color: #4b5563;
+  color: #6b7280;
   line-height: 1.6;
 }
 
@@ -287,12 +330,12 @@ const submitReview = () => {
 
 .review-name {
   font-weight: 700;
-  color: #374151;
+  color: #dee1e6;
 }
 
 .review-name-link {
   font-weight: 700;
-  color: #374151;
+  color: #dee1e6;
   text-decoration: none;
 }
 
@@ -308,7 +351,7 @@ const submitReview = () => {
 
 .review-comment {
   margin: 0;
-  color: #4b5563;
+  color: #dee1e6;
   line-height: 1.6;
 }
 

@@ -1,94 +1,51 @@
-const USERS_KEY = 'shop_users'
+const API_BASE = 'http://localhost:3001/api'
 const CURRENT_USER_KEY = 'shop_current_user'
 
-function getUsers() {
-  return JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
-}
+export async function registerUser({ username, email, password }) {
+  const response = await fetch(`${API_BASE}/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username,
+      email,
+      password
+    })
+  })
 
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-}
+  const data = await response.json()
 
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-}
-
-function makeUniqueSlug(baseSlug, users) {
-  let slug = baseSlug || 'user'
-  let count = 1
-
-  while (users.some((user) => user.slug === slug)) {
-    slug = `${baseSlug || 'user'}-${count}`
-    count += 1
+  if (!response.ok) {
+    throw new Error(data.error || 'Registration failed.')
   }
 
-  return slug
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(data.user))
+  return data.user
 }
 
-export function registerUser({ username, email, password, slug }) {
-  const users = getUsers()
+export async function loginUser({ email, password }) {
+  const response = await fetch(`${API_BASE}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  })
 
-  const existingUser = users.find(
-    (user) =>
-      user.email.toLowerCase() === email.toLowerCase() ||
-      user.username.toLowerCase() === username.toLowerCase()
-  )
+  const data = await response.json()
 
-  if (existingUser) {
-    throw new Error('User with that email or username already exists.')
+  if (!response.ok) {
+    throw new Error(data.error || 'Login failed.')
   }
 
-  const baseSlug = slugify(slug || username)
-  const uniqueSlug = makeUniqueSlug(baseSlug, users)
-
-  const newUser = {
-    id: crypto.randomUUID(),
-    username: username.trim(),
-    slug: uniqueSlug,
-    email: email.trim(),
-    password
-  }
-
-  users.push(newUser)
-  saveUsers(users)
-
-  const safeUser = {
-    id: newUser.id,
-    username: newUser.username,
-    email: newUser.email,
-    slug: newUser.slug
-  }
-
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(safeUser))
-  return safeUser
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(data.user))
+  return data.user
 }
 
-export function loginUser({ email, password }) {
-  const users = getUsers()
-
-  const matchedUser = users.find(
-    (user) => user.email.toLowerCase() === email.toLowerCase() && user.password === password
-  )
-
-  if (!matchedUser) {
-    throw new Error('Invalid email or password.')
-  }
-
-  const safeUser = {
-    id: matchedUser.id,
-    username: matchedUser.username,
-    email: matchedUser.email,
-    slug: matchedUser.slug
-  }
-
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(safeUser))
-  return safeUser
-}
 
 export function logoutUser() {
   localStorage.removeItem(CURRENT_USER_KEY)
@@ -96,13 +53,4 @@ export function logoutUser() {
 
 export function getCurrentUser() {
   return JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null')
-}
-
-export function getAllUsers() {
-  return getUsers().map((user) => ({
-    id: user.id,
-    username: user.username,
-    slug: user.slug,
-    email: user.email
-  }))
 }

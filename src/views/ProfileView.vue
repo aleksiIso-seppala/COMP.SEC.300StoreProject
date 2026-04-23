@@ -36,30 +36,29 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { products } from '../data/products'
-import { getAllUsers } from '../utils/auth'
+import { getProfile } from '../utils/reviews'
 
 const route = useRoute()
 
-const users = getAllUsers()
+const profileUser = ref(null)
+const userReviews = ref([])
 
-const profileUser = computed(() => users.find((user) => user.slug === route.params.slug) || null)
+const loadProfile = async () => {
+  try {
+    const data = await getProfile(route.params.slug)
+    profileUser.value = data.user
+    userReviews.value = data.reviews || []
+  } catch (error) {
+    console.error('Failed to load profile:', error)
+    profileUser.value = null
+    userReviews.value = []
+  }
+}
 
-const userReviews = computed(() => {
-  if (!profileUser.value) return []
-
-  return products.flatMap((product) =>
-    product.reviews
-      .filter((review) => review.userSlug === profileUser.value.slug)
-      .map((review) => ({
-        ...review,
-        productTitle: product.title,
-        productSlug: product.slug
-      }))
-  )
-})
+onMounted(loadProfile)
+watch(() => route.params.slug, loadProfile)
 </script>
 
 <style scoped>

@@ -7,8 +7,6 @@
         <h2>{{ product.title }}</h2>
         <p>{{ product.description }}</p>
       </div>
-
-      <strong class="price">{{ product.price.toFixed(2) }}€</strong>
     </div>
   </RouterLink>
 </template>
