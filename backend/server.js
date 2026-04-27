@@ -5,11 +5,22 @@ import fs from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
+import session from 'express-session'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+app.use(session({
+  secret: '8856bbe6606e7a60b518d1731b192fcf0f7715c1644c8b9808a53c402ac71de3',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false
+  }
+}))
 const PORT = 3001
 
 const DATA_DIR = path.join(__dirname, 'data')
@@ -86,12 +97,21 @@ function validatePassword(password) {
   }
 }
 
+function validateUsername(username) {
+  return /^[a-zA-Z0-9_-]{3,20}$/.test(username)
+}
+
+
 app.post('/api/register', async (req, res) => {
   try {
     const { username, email, password } = req.body
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'Username, email, and password are required.' })
+    }
+
+    if (!validateUsername(username)) {
+      return res.status(400).json({ error: 'Username is invalid.' })
     }
 
     const passwordValidation = validatePassword(password)
@@ -139,6 +159,9 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({
       user: getSafeUser(newUser)
     })
+
+    req.session.userId = newUser.id
+
   } catch (error) {
     console.error('Register error:', error)
     res.status(500).json({ error: 'Server error during registration.' })
@@ -172,11 +195,34 @@ app.post('/api/login', async (req, res) => {
     res.json({
       user: getSafeUser(matchedUser)
     })
+    req.session.userId = matchedUser.id
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).json({ error: 'Server error during login.' })
   }
 })
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.json({ ok: true })
+  })
+})
+
+app.get('/api/me', async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Not authenticated.' })
+  }
+
+  const users = await readJson(USERS_FILE)
+  const user = users.find((u) => u.id === req.session.userId)
+
+  if (!user) {
+    return res.status(401).json({ error: 'Not authenticated.' })
+  }
+
+  res.json({ user: getSafeUser(user) })
+})
+
 
 app.get('/api/profile/:slug', async (req, res) => {
   try {
@@ -217,23 +263,51 @@ app.get('/api/profile/:slug', async (req, res) => {
   }
 })
 
+
+function validateReview({ title, rating, comment }) {
+  if (title.trim().length < 3 || title.trim().length > 100) {
+    return 'Review title must be 3 to 100 characters long.'
+  }
+
+  if (comment.trim().length < 3 || comment.trim().length > 2000) {
+    return 'Review must be 3 to 2000 characters long.'
+  }
+
+  if (!Number.isInteger(Number(rating)) || Number(rating) < 1 || Number(rating) > 5) {
+    return 'Rating must be between 1 and 5.'
+  }
+  return null
+}
+
+
 app.post('/api/reviews', async (req, res) => {
   try {
+
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'You must be logged in to post a review.' })
+    }
+
     const { productSlug, productTitle, title, rating, comment, userId, userSlug, userName } = req.body
 
     if (!productSlug || !productTitle || !title || !rating || !comment || !userId || !userSlug || !userName) {
       return res.status(400).json({ error: 'Missing required review fields.' })
     }
 
+    const reviewError = validateReview({ title, rating, comment })
+    if (reviewError) {
+      return res.status(400).json({ error: reviewError })
+    }
+
     const reviews = await readJson(REVIEWS_FILE)
+    const user = users.find((u) => u.id === req.session.userId)
 
     const newReview = {
       id: crypto.randomUUID(),
       productSlug,
       productTitle,
-      userId,
-      userSlug,
-      userName,
+      userId: user.id,
+      userSlug: user.slug,
+      userName: user.username,
       title: title.trim(),
       rating: Number(rating),
       comment: comment.trim(),

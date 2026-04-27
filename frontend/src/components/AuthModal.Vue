@@ -57,23 +57,36 @@
           />
         </label>
 	
-        <ul v-if="!isLogin" class="password-rules" aria-label="Password requirements">
-          <li :class="{ passed: passwordChecks.minLength }">
-            <span class="rule-icon">{{ passwordChecks.minLength ? '✔' : '✖' }}</span>
-            Password needs to be at least 8 characters long
-          </li>
-          <li :class="{ passed: passwordChecks.upperAndLower }">
-            <span class="rule-icon">{{ passwordChecks.upperAndLower ? '✔' : '✖' }}</span>
-            Password needs at least one lowercase/uppercase letter
-          </li>
-          <li :class="{ passed: passwordChecks.number }">
-            <span class="rule-icon">{{ passwordChecks.number ? '✔' : '✖' }}</span>
-            Password needs at least one number
-          </li>
-          <li :class="{ passed: passwordChecks.special }">
-            <span class="rule-icon">{{ passwordChecks.special ? '✔' : '✖' }}</span>
-            Password needs at least one special character
-          </li>
+        <ul
+          v-if="!isLogin && showPasswordRules"
+          class="password-rules"
+          aria-label="Password requirements"
+        >
+          <template v-if="isPasswordValid">
+            <li class="passed">
+              <span class="rule-icon">✔</span>
+              Password meets all credentials
+            </li>
+          </template>
+
+          <template v-else>
+            <li>
+              <span class="rule-icon">•</span>
+              Password needs to be at least 8 characters long
+            </li>
+            <li>
+              <span class="rule-icon">•</span>
+              Password needs at least one lowercase/uppercase letter
+            </li>
+            <li>
+              <span class="rule-icon">•</span>
+              Password needs at least one number
+            </li>
+            <li>
+              <span class="rule-icon">•</span>
+              Password needs at least one special character
+            </li>
+          </template>
         </ul>
 
         <label v-if="!isLogin">
@@ -121,8 +134,6 @@ const emit = defineEmits(['close', 'switch-mode', 'submit'])
 
 const errorMessage = ref('')
 
-const usernameFocused = ref(false)
-
 const form = reactive({
   username: '',
   email: '',
@@ -154,9 +165,12 @@ const isPasswordValid = computed(() =>
 )
 
 const showUsernameRules = computed(() =>
-  form.username.trim().length > 0 && !usernameFocused.value && !isUsernameValid.value
+  !isLogin.value
 )
 
+const showPasswordRules = computed(() =>
+  !isLogin.value
+)
 
 const resetForm = () => {
   form.username = ''

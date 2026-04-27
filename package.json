@@ -1,25 +1,10 @@
 {
-  "name": "shop-frontend",
+  "name": "shop-root",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
-    "dev:front": "vite",
-    "dev:back": "cd backend && npm run dev",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "vue": "^3.5.0",
-    "vue-router": "^4.5.0"
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\""
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.0",
-    "vite-plugin-vue-devtools": "^8.1.1",
-    "concurrently": "^9.0.0",
-    "vite": "^8.0.0"
+    "concurrently": "^9.0.0"
   }
 }
-
-

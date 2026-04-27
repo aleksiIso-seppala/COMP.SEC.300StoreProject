@@ -1,9 +1,10 @@
-const API_BASE = 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_BASE  || 'http://localhost:3001/api'
 const CURRENT_USER_KEY = 'shop_current_user'
 
 export async function registerUser({ username, email, password }) {
   const response = await fetch(`${API_BASE}/register`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -27,6 +28,7 @@ export async function registerUser({ username, email, password }) {
 export async function loginUser({ email, password }) {
   const response = await fetch(`${API_BASE}/login`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -47,10 +49,22 @@ export async function loginUser({ email, password }) {
 }
 
 
-export function logoutUser() {
+export async function logoutUser() {
+  await fetch(`${API_BASE}/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  })
+
   localStorage.removeItem(CURRENT_USER_KEY)
 }
 
-export function getCurrentUser() {
-  return JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null')
+export async function getCurrentUser() {
+  const response = await fetch(`${API_BASE}/me`, {
+    credentials: 'include'
+  })
+
+  if (!response.ok) return null
+
+  const data = await response.json()
+  return data.user
 }

@@ -42,7 +42,7 @@
 <script setup>
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import AuthModal from './components/AuthModal.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { getCurrentUser, loginUser, registerUser, logoutUser } from './utils/auth'
 
 const isAuthModalOpen = ref(false)
@@ -75,10 +75,14 @@ const handleAuthSubmit = async ({ username, email, password, setError, close }) 
 }
 
 const handleLogout = async () => {
-  logoutUser()
+  await logoutUser()
   currentUser.value = null
   router.push('/')
 }
+
+onMounted(async () => {
+  currentUser.value = await getCurrentUser()
+})
 
 </script>
 

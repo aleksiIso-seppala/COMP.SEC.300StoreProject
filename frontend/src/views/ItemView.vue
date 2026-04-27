@@ -101,7 +101,7 @@ import { products } from '../data/products'
 import { getCurrentUser } from '../utils/auth'
 
 const route = useRoute()
-const API_BASE = 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api'
 
 const item = computed(() => products.find((entry) => entry.slug === route.params.slug) || null)
 const currentUser = ref(getCurrentUser())
