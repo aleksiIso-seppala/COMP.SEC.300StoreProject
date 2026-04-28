@@ -6,5 +6,29 @@
     "email": "test@gmail.com",
     "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$xRr3bxYQUg84C7ZXhNUYyw$oYkLbgtHVVi232iEnO0FYhxKne0WpiGe8Cz8nCsRYPg",
     "createdAt": "2026-04-23T16:23:37.361Z"
+  },
+  {
+    "id": "de1ebcd7-dd69-4ad6-9fcd-9d6f73f53072",
+    "username": "tester",
+    "slug": "tester",
+    "email": "tester@gmail.com",
+    "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$X5WiyMsqm/po9FipUqwlfg$UJ2Bu+37+RsI9Ohw0t6cD/2pLc4HIBhO6Jb3Qfjnu/4",
+    "createdAt": "2026-04-28T19:16:42.523Z"
+  },
+  {
+    "id": "5727b17c-6fbe-4d76-914f-87c922055436",
+    "username": "reviewrman",
+    "slug": "reviewrman",
+    "email": "gamejournalist@goodthink.com",
+    "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$7t2FyULdjWJHGsvVwzpwyQ$wfoJ4Myb+1Sbase9XYoIvFg697mTcC1KiJWlii+KQqY",
+    "createdAt": "2026-04-28T19:21:31.046Z"
+  },
+  {
+    "id": "72af7a0d-7364-4925-a1f3-4217b03e3b6f",
+    "username": "testuser",
+    "slug": "testuser",
+    "email": "testuser@gmail.com",
+    "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$2UpvwZsBnoek0/dcF8qW6A$SKnP7l4h9dWqPLxyeUsz4V4rKkjws/kAniOGGIz3opQ",
+    "createdAt": "2026-04-28T19:57:04.822Z"
   }
 ]

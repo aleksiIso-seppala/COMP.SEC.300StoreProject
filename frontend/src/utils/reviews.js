@@ -2,26 +2,23 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api'
 
 export async function postReview({
   productSlug,
+  productTitle,
   title,
   rating,
   comment,
-  userId,
-  userSlug,
-  userName
 }) {
   const response = await fetch(`${API_BASE}/reviews`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       productSlug,
+      productTitle,
       title,
       rating,
       comment,
-      userId,
-      userSlug,
-      userName
     })
   })
 

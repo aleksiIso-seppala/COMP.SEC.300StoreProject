@@ -47,7 +47,7 @@ import { getCurrentUser, loginUser, registerUser, logoutUser } from './utils/aut
 
 const isAuthModalOpen = ref(false)
 const authMode = ref('login')
-const currentUser = ref(getCurrentUser())
+const currentUser = ref(null)
 const router = useRouter()
 
 const openModal = (mode) => {

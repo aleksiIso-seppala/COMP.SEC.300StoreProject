@@ -27,9 +27,20 @@ const DATA_DIR = path.join(__dirname, 'data')
 const USERS_FILE = path.join(DATA_DIR, 'users.json')
 const REVIEWS_FILE = path.join(DATA_DIR, 'reviews.json')
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://195.148.31.149:5173'
+]
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null,true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
     credentials: true
   })
 )
@@ -156,17 +167,23 @@ app.post('/api/register', async (req, res) => {
     users.push(newUser)
     await writeJson(USERS_FILE, users)
 
-    res.status(201).json({
-      user: getSafeUser(newUser)
-    })
-
     req.session.userId = newUser.id
 
+    req.session.save((err) => {
+      if (err) {
+        console.error('Register sessions save error:', err)
+        return res.status(500).json({ error: 'Failed to create session.'})
+      }
+      
+      res.status(201).json({
+        user: getSafeUser(newUser)
+      })
+    })
   } catch (error) {
     console.error('Register error:', error)
     res.status(500).json({ error: 'Server error during registration.' })
-  }
-})
+  }  
+}) 
 
 app.post('/api/login', async (req, res) => {
   try {
@@ -192,10 +209,17 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' })
     }
 
-    res.json({
-      user: getSafeUser(matchedUser)
-    })
     req.session.userId = matchedUser.id
+    
+    req.session.save((err) => {
+      if (err) {
+        console.error('Register session save error:', err)
+        return res.status(500).json({ error: 'Failed to create session.'})
+      }
+      res.status(201).json({
+        user: getSafeUser(matchedUser)
+      })
+    })
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).json({ error: 'Server error during login.' })
@@ -296,9 +320,9 @@ app.post('/api/reviews', async (req, res) => {
     }
 
 
-    const { productSlug, productTitle, title, rating, comment, userId, userSlug, userName } = req.body
+    const { productSlug, productTitle, title, rating, comment } = req.body
 
-    if (!productSlug || !productTitle || !title || !rating || !comment || !userId || !userSlug || !userName) {
+    if (!productSlug || !productTitle || !title || !rating || !comment) {
       return res.status(400).json({ error: 'Missing required review fields.' })
     }
 

@@ -95,20 +95,26 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { products } from '../data/products'
 import { getCurrentUser } from '../utils/auth'
+import { postReview } from '../utils/reviews'
 
 const route = useRoute()
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api'
 
 const item = computed(() => products.find((entry) => entry.slug === route.params.slug) || null)
-const currentUser = ref(getCurrentUser())
+const currentUser = ref(null)
 const reviews = ref([])
 const reviewTitle = ref('')
 const reviewRating = ref(5)
 const reviewComment = ref('')
+
+onMounted(async () => {
+  currentUser.value = await getCurrentUser()
+})
+
 
 const loadReviews = async () => {
   if (!item.value) {
@@ -140,30 +146,15 @@ const submitReview = async () => {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/reviews`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        productSlug: item.value.slug,
-        productTitle: item.value.title,
-        title: reviewTitle.value.trim(),
-        rating: reviewRating.value,
-        comment: reviewComment.value.trim(),
-        userId: currentUser.value.id,
-        userSlug: currentUser.value.slug,
-        userName: currentUser.value.username
-      })
+    const newReview = await postReview({
+      productSlug: item.value.slug,
+      productTitle: item.value.title,
+      title: reviewTitle.value.trim(),
+      rating: reviewRating.value,
+      comment: reviewComment.value.trim(),
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to post review.')
-    }
-
-    reviews.value.unshift(data.review)
+    reviews.value.unshift(newReview)
 
     reviewTitle.value = ''
     reviewRating.value = 5
