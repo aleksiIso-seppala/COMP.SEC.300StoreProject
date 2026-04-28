@@ -287,6 +287,15 @@ app.post('/api/reviews', async (req, res) => {
       return res.status(401).json({ error: 'You must be logged in to post a review.' })
     }
 
+
+    const users = await readJson(USERS_FILE)
+    const user = users.find((u) => u.id === req.session.userId)
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid session.' })
+    }
+
+
     const { productSlug, productTitle, title, rating, comment, userId, userSlug, userName } = req.body
 
     if (!productSlug || !productTitle || !title || !rating || !comment || !userId || !userSlug || !userName) {
@@ -299,7 +308,6 @@ app.post('/api/reviews', async (req, res) => {
     }
 
     const reviews = await readJson(REVIEWS_FILE)
-    const user = users.find((u) => u.id === req.session.userId)
 
     const newReview = {
       id: crypto.randomUUID(),
