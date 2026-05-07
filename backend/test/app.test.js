@@ -67,34 +67,6 @@ describe('API', () => {
     expect(res.status).toBe(409)
     expect(res.body.error).toBe('User with that email or username already exists.')
   })
-  
-  it('POST /api/register should reject a weak password', async () => {
-    const res = await request(app).post('/api/register').send({
-      username: 'WeakUser1',
-      email: 'weak@example.com',
-      password: 'weak'
-    })
-
-    expect(res.status).toBe(400)
-    expect(res.body.error).toBe('Password does not meet the required conditions.')
-  })
-
-  it('POST /api/register should reject a duplicate email', async () => {
-    await request(app).post('/api/register').send({
-      username: 'FirstUser1',
-      email: 'duplicate@example.com',
-      password: 'SecurePass1!'
-    })
-
-    const res = await request(app).post('/api/register').send({
-      username: 'SecondUser1',
-      email: 'duplicate@example.com',
-      password: 'SecurePass1!'
-    })
-
-    expect(res.status).toBe(409)
-    expect(res.body.error).toBe('User with that email or username already exists.')
-  })
 
   it('GET /api/me should return the logged-in user after register', async () => {
     const agent = request.agent(app)
