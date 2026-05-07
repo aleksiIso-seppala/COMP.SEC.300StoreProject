@@ -1,0 +1,10 @@
+[
+  {
+    "id": "913ce81b-25aa-4669-81d0-cd5a22480134",
+    "username": "LogoutUser1",
+    "slug": "logoutuser1",
+    "email": "logout@example.com",
+    "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$Ff2e3pcxUTzXVltTzqoEmQ$AODVWqc61TzKP2AmWD6l3d7Hzq4wqPL6WlyZ1KXZxEw",
+    "createdAt": "2026-05-07T12:17:38.117Z"
+  }
+]
