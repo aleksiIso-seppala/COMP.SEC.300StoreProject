@@ -24,8 +24,8 @@ coverage
 *.sln
 *.sw?
 
-/backend.env
-/frontend.env
+backend/.env
+frontend/.env
 
 *.tsbuildinfo
 
