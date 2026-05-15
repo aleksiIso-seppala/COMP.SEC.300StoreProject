@@ -1,61 +1,38 @@
 [
   {
+    "id": "30425775-9df8-4aa4-9dfc-c4143ddfdce2",
+    "productSlug": "ultrakill",
+    "productTitle": "ULTRAKILL",
+    "userId": "de1ebcd7-dd69-4ad6-9fcd-9d6f73f53072",
+    "userSlug": "tester",
+    "userName": "tester",
+    "title": "Hectic and confusing",
+    "rating": 1,
+    "comment": "I can't keep up with the game at all",
+    "createdAt": "2026-05-15T15:10:25.169Z"
+  },
+  {
     "id": "d893d16f-c4e7-4109-a444-8039c770fed7",
     "productSlug": "cairn",
     "productTitle": "Cairn",
     "userId": "72af7a0d-7364-4925-a1f3-4217b03e3b6f",
     "userSlug": "testuser",
     "userName": "testuser",
-    "title": "almost 5 stars",
-    "rating": 4,
-    "comment": "Hits something, the spot isn't it",
-    "createdAt": "2026-04-28T20:29:05.911Z"
-  },
-  {
-    "id": "51e7f4ac-03a4-402e-8381-aab1f28cba31",
-    "productSlug": "ultrakill",
-    "productTitle": "ULTRAKILL",
-    "userId": "5b5aeda7-275a-464f-a969-df320a112a6d",
-    "userSlug": "kaps",
-    "userName": "Kaps",
-    "title": "poor experience",
-    "rating": 1,
-    "comment": "awdawd",
-    "createdAt": "2026-04-23T16:55:09.778Z"
-  },
-  {
-    "id": "e0f97913-3a73-4c0a-ae75-15926417f614",
-    "productSlug": "elden-ring",
-    "productTitle": "Elden Ring",
-    "userId": "5b5aeda7-275a-464f-a969-df320a112a6d",
-    "userSlug": "kaps",
-    "userName": "Kaps",
-    "title": "its the best",
+    "title": "Amazing",
     "rating": 5,
-    "comment": "awdawdawdawd",
-    "createdAt": "2026-04-23T16:54:53.701Z"
-  },
-  {
-    "id": "1208a0bb-b017-4622-add7-0cd24a1e9b53",
-    "productSlug": "ultrakill",
-    "userId": "5b5aeda7-275a-464f-a969-df320a112a6d",
-    "userSlug": "kaps",
-    "userName": "Kaps",
-    "title": "Its alright",
-    "rating": 3,
-    "comment": "gameplay and soundtrack are fire",
-    "createdAt": "2026-04-23T16:53:53.089Z"
+    "comment": "The game leaves a lasting impression",
+    "createdAt": "2026-04-28T20:29:05.911Z"
   },
   {
     "id": "b2e178e1-cf2b-4c30-b71c-89df4015a474",
     "productSlug": "cairn",
     "productTitle": "Cairn",
     "userId": "5b5aeda7-275a-464f-a969-df320a112a6d",
-    "userSlug": "kaps",
-    "userName": "Kaps",
-    "title": "test review",
-    "rating": 5,
-    "comment": "Amazing game!",
+    "userSlug": "tester",
+    "userName": "Tester",
+    "title": "Good but too punishing",
+    "rating": 3,
+    "comment": "I found it a bit too difficult to climb",
     "createdAt": "2026-04-23T16:37:16.839Z"
   }
 ]
