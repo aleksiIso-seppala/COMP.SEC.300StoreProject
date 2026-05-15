@@ -12,15 +12,15 @@ const __dirname = path.dirname(__filename)
 
 const app = express()
 app.use(session({
-  secret: '8856bbe6606e7a60b518d1731b192fcf0f7715c1644c8b9808a53c402ac71de3',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  maxAge: 1000 * 60 * 30,
+  rolling: true
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
-    maxAge: 1000 * 60 * 30,
-    rolling: true
+    secure: false
   }
 }))
 
