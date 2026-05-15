@@ -6,21 +6,25 @@ import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
 import session from 'express-session'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  maxAge: 1000 * 60 * 30,
-  rolling: true
+  rolling: true,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false
+    secure: false,
+    maxAge: 1000 * 60 * 30
   }
 }))
 
