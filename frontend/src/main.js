@@ -22,7 +22,8 @@ const router = createRouter({
     {
       path: '/account',
       name: 'account',
-      component: AccountView
+      component: AccountView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/profile/:slug',
@@ -38,5 +39,21 @@ const router = createRouter({
     return { top: 0 }
   }
 })
+
+router.beforeEach(async (to) => {
+  if (!to.meta.requiresAuth) {
+    return true
+  }
+
+  const user = await getCurrentUser()
+
+  if (!user) {
+    return '/'
+  }
+
+  return true
+})
+
+
 
 createApp(App).use(router).mount('#app')
