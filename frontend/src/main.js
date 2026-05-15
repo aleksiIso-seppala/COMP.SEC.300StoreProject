@@ -5,6 +5,7 @@ import HomeView from './views/HomeView.vue'
 import ItemView from './views/ItemView.vue'
 import AccountView from './views/AccountView.vue'
 import ProfileView from './views/ProfileView.vue'
+import { getCurrentUser } from './utils/auth'
 
 const router = createRouter({
   history: createWebHistory(),
