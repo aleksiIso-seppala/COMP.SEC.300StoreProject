@@ -1,38 +1,33 @@
-# notSteam
+# GameReview
 
-This template should help get you started developing with Vue 3 in Vite.
+GameReview is a full-stack web application where users can browse games and see reviews written for them. Users can register to the application to leave new reviews for games with a title, star rating, and the actual review commment.
 
-## Recommended IDE Setup
+The application is made specifically as a project for Secure Programming course, and functions as a learning experience instead of a fully functional application.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+# Features
 
-## Recommended Browser Setup
+- Browse games, and view a single game
+- Register a new account and log in to it
+- Post reviews while logged in
+- View public user profiles and reviews
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Technologies used
 
-## Customize configuration
+- Frontend: Vue, Vite
+- Backend: Node.js, Express
+- Testing: Vitest, Supertest
+- Deployment: Docker
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## How to run application using Docker
 
-## Project Setup
+1. Make sure you have Node.js, npm, and Docker installed on your PC.
+2. clone project using command 
+"git clone https://github.com/aleksiIso-seppala/COMP.SEC.300StoreProject.git"
 
-```sh
-npm install
-```
+3. create a .env file to backend folder. the file needs to include the following line, but with the secret replaced
+SESSION_SECRET=your_long_random_secret_here
 
-### Compile and Hot-Reload for Development
+4. Build application by running
+docker compose up --build
 
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+5. Access application via http://localhost:5173
